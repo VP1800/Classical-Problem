@@ -1,4 +1,3 @@
-// 2009-05-05
 #include <iostream>
 #include <algorithm>
 using namespace std;
