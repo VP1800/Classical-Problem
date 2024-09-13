@@ -1,88 +1,43 @@
-#include <iostream>
+#include<fstream>
+#include<string>
+#include<cstring>
+#define BIG 105
 using namespace std;
-struct guess
-{
-    char t[5];
-    int c, w;
-} g[105];
-bool match(char can[5], char o[5], int nc, int nw)
-{
-    int c = 0, w = 0;
-    for (int i = 0; i < 4; i++)
-    {
-        //cout << o[i] << " ";
+ifstream fin("mmind.in");
+ofstream fout("mmind.out");
+int n,c[BIG],w[BIG],zc,zw;
+char g[BIG][5],work[5];
+bool pp[10],okay1[10],okay2[10],flag;
+inline bool cmp(char *a,char *b,int now){
+    memset(okay1,0,sizeof(okay1));
+    memset(okay2,0,sizeof(okay2));
+    memset(pp,0,sizeof(pp));
+    zc=zw=0;
+    for(int i=1;i<=4;i++){
+        if(a[i]==b[i-1]) {zc++;pp[a[i]-48]=1;}
+        okay1[a[i]-48]=1;
+        okay2[b[i-1]-48]=1;
     }
-    //cout << endl;
-
-    for (int i = 0; i < 4; i++)
-    {
-        if (can[i] == o[i] - '0')
-        {
-            c++;
-        }
-    }
-    int tab[100] = {0};
-    for (int i = 0; i < 4; i++)
-    {
-        tab[o[i] - '0']++;
-    }
-    for (int i = 0; i < 4; i++)
-    {
-        if (tab[can[i]])
-        {
-            tab[can[i]]--;
-            w++;
-        }
-    }
-    w -= c;
-    w = max(0, w);
-    //cout << c << " " << w << endl;
-    if (nc == c && nw == w)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    if(zc!=c[now]) return false;
+    for(int i=0;i<=9;i++)
+        if(!pp[i] &&(okay1[i]&okay2[i])) zw++;
+    if(zw!=w[now]) return false;
+    return true;
 }
-int main()
-{
-    int n;
-    cin >> n;
-    for (int i = 0; i < n; i++)
-    {
-        cin >> g[i].t >> g[i].c >> g[i].w;
-    }
-    bool has_ans = false;
-    for (int i = 1000; i <= 9999; i++)
-    {
-        int tmp = i;
-        char t[5];
-        for (int j = 3; j >= 0; j--)
-        {
-            t[j] = tmp % 10;
-            tmp /= 10;
+int main(){
+    fin>>n;
+    for(int i=1;i<=n;i++) fin>>g[i]>>c[i]>>w[i];
+    for(int i=1000;i<=9999;i++){
+        int zh=i,j=0;
+        while(zh){
+            work[5-(++j)]=zh%10+48;
+            zh/=10;
         }
-        bool is_ans = true;
-        for (int j = 0; j < n; j++)
-        {
-            if (!match(t, g[j].t, g[j].c, g[j].w))
-            {
-                is_ans = false;
-                break;
-            }
-        }
-        if (is_ans)
-        {
-            has_ans = true;
-            cout << i << endl;
-            break;
-        }
+        flag=true;
+        for(int k=1;k<=n;k++)
+            if(!cmp(work,g[k],k)) {flag=false;break;}
+        if(flag) {fout<<i<<endl;return 0;}
     }
-    if (!has_ans)
-    {
-        cout << "NONE" << endl;
-    }
-    return EXIT_SUCCESS;
+    fout<<"NONE"<<endl;
+    return 0;
 }
